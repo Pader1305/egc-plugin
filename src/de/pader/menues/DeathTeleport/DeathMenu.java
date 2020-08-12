@@ -1,5 +1,6 @@
 package de.pader.menues.DeathTeleport;
 
+import de.pader.main.Main;
 import de.pader.menues.MainMenu;
 import de.pader.utils.Menu;
 import de.pader.utils.PlayerMenuUtility;
@@ -14,6 +15,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 
 public class DeathMenu extends Menu {
+
+
+    private Main plugin = Main.getPlugin();
 
     private final int eventIndex = 4;
 
@@ -36,10 +40,28 @@ public class DeathMenu extends Menu {
         switch (e.getCurrentItem().getType()){
             case PLAYER_HEAD:
                 Player p = playerMenuUtility.getOwner();
-                Location target = playerMenuUtility.getOwnerLocation();
-                p.teleport(target);
-                playerMenuUtility.setOwnerLocation(null);
-                e.getWhoClicked().sendMessage(ChatColor.GREEN + "Du hast dich zu deinem letzten Tod teleportier!");
+                if (!plugin.coolDownTime.containsKey(p.getUniqueId())){
+                    plugin.coolDownTime.put(playerMenuUtility.getOwner().getUniqueId(), plugin.masterTime);
+
+                    p.sendMessage(ChatColor.GREEN + "Du wurdest zum Cooldown hinzugefügt!");
+
+
+                    Location target = playerMenuUtility.getOwnerLocation();
+                    p.teleport(target);
+                    playerMenuUtility.setOwnerLocation(null);
+                    e.getWhoClicked().sendMessage(ChatColor.GREEN + "Du hast dich zu deinem letzten Tod teleportiert!");
+                }
+                else{
+
+                    int sekunden = plugin.coolDownTime.get(p.getUniqueId()) % 60;
+                    int minuten = plugin.coolDownTime.get(p.getUniqueId()) / 60;
+                    String timestring = String.format("%02d:%02d", minuten, sekunden);
+
+                    p.sendMessage(ChatColor.RED + "Du musst noch: " + ChatColor.YELLOW + timestring + " Minuten"
+                            + ChatColor.RED + " warten, bis du dich wieder teleportieren kannst!");
+                    e.setCancelled(true);
+                }
+
                 break;
             case BARRIER:
                 new MainMenu(playerMenuUtility).open();

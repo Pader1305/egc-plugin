@@ -2,6 +2,7 @@ package de.pader.listener;
 
 import de.pader.main.Main;
 import de.pader.utils.PlayerMenuUtility;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -26,12 +27,13 @@ public class DeathListener implements Listener {
         if (ent instanceof Player)
         {
             Player p = (Player)ent;
-            if (dc == DamageCause.VOID){
-                p.sendMessage(Color.RED + "Tod konnte nicht aufgezeichnet werden.");
+            if (dc == DamageCause.VOID)
+            {
+                p.sendMessage(ChatColor.RED + "Tod konnte nicht aufgezeichnet werden.");
 
             }
             if (dc == DamageCause.LAVA){
-                p.sendMessage(Color.RED + "Du bist in Lava gestorben. Dein Tod wurde nicht aufgezeichnet.");
+                p.sendMessage(ChatColor.RED + "Du bist in Lava gestorben. Dein Tod wurde nicht aufgezeichnet.");
                 return;
             }
 
