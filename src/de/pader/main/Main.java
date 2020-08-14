@@ -1,16 +1,24 @@
 package de.pader.main;
 
+import de.pader.ActionBar.ActionbarManager;
 import de.pader.commands.InventoryGUICommand;
 import de.pader.listener.DeathListener;
 import de.pader.listener.MenuListener;
 import de.pader.listener.PlayerJoinLeftListener;
 import de.pader.utils.PlayerMenuUtility;
+import net.minecraft.server.v1_16_R1.IChatBaseComponent;
+import net.minecraft.server.v1_16_R1.PacketPlayOutTitle;
+import net.minecraft.server.v1_16_R1.PlayerConnection;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +27,9 @@ public class Main extends JavaPlugin {
 
     private static Main plugin;
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<Player, PlayerMenuUtility>();
+
+    public HashMap<UUID, Long> availablePlayers = new HashMap<UUID,Long>();
+
     public HashMap<UUID, Integer> coolDownTime = new HashMap<UUID, Integer>();
     public final int masterTime = 300;
 
@@ -35,7 +46,9 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new DeathListener(),this);
         getServer().getPluginManager().registerEvents(new PlayerJoinLeftListener(), this);
 
+
         coolDownRunnable();
+        permanentActionBar();
 
     }
 
@@ -103,4 +116,14 @@ public class Main extends JavaPlugin {
     }
 
 
+    public void permanentActionBar(){
+        ActionbarManager manager = new ActionbarManager(this);
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                manager.updateTimeBar();
+            }
+
+        }.runTaskTimer(this, 0L,20L);
+    }
 }
