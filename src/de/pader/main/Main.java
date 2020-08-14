@@ -7,6 +7,7 @@ import de.pader.listener.MenuListener;
 import de.pader.listener.PlayerJoinLeftListener;
 import de.pader.utils.PlayerMenuUtility;
 import net.minecraft.server.v1_16_R1.IChatBaseComponent;
+import net.minecraft.server.v1_16_R1.MinecraftServer;
 import net.minecraft.server.v1_16_R1.PacketPlayOutTitle;
 import net.minecraft.server.v1_16_R1.PlayerConnection;
 import org.bukkit.Bukkit;
@@ -38,6 +39,7 @@ public class Main extends JavaPlugin {
 
         plugin = this;
         loadConfig();
+        loadOnlinePlayers();
         loadPlayerCooldown();
 
         getCommand("egc").setExecutor(new InventoryGUICommand());
@@ -46,10 +48,15 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new DeathListener(),this);
         getServer().getPluginManager().registerEvents(new PlayerJoinLeftListener(), this);
 
-
         coolDownRunnable();
         permanentActionBar();
 
+    }
+
+    private void loadOnlinePlayers() {
+        for (Player player : Bukkit.getOnlinePlayers()){
+            availablePlayers.put(player.getUniqueId(), 0L);
+        }
     }
 
     private void loadPlayerCooldown()
@@ -124,6 +131,6 @@ public class Main extends JavaPlugin {
                 manager.updateTimeBar();
             }
 
-        }.runTaskTimer(this, 0L,20L);
+        }.runTaskTimerAsynchronously(this, 0L,20L);
     }
 }
